@@ -81,4 +81,4 @@ terraform-modules
 aws-networking
 devops
 cloud
-<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/82bb349f-059f-4981-b650-56bb9cc21231" />
+

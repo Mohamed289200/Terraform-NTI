@@ -5,12 +5,8 @@ pipeline {
         choice(
             name: 'ENVIRONMENT',
             choices: ['dev', 'stag', 'prod'],
-            description: 'Choose Terraform Environment'
+            description: 'Select the environment'
         )
-    }
-
-    environment {
-        AWS_DEFAULT_REGION = 'us-east-2'
     }
 
     stages {
@@ -27,12 +23,6 @@ pipeline {
             }
         }
 
-        stage('Terraform Format') {
-            steps {
-                sh 'terraform fmt -check'
-            }
-        }
-
         stage('Terraform Validate') {
             steps {
                 sh 'terraform validate'
@@ -41,20 +31,13 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                sh """
-                terraform plan \
-                -var-file=${params.ENVIRONMENT}.tfvars \
-                -out=tfplan
-                """
+                sh "terraform plan -var-file=${params.ENVIRONMENT}.tfvars -out=tfplan"
             }
         }
 
         stage('Approval') {
             steps {
-                input(
-                    message: "Deploy to ${params.ENVIRONMENT} ?",
-                    ok: "Deploy"
-                )
+                input "Deploy to ${params.ENVIRONMENT}?"
             }
         }
 
@@ -73,11 +56,11 @@ pipeline {
 
     post {
         success {
-            echo "Deployment to ${params.ENVIRONMENT} completed successfully."
+            echo "Terraform deployment to ${params.ENVIRONMENT} completed successfully!"
         }
 
         failure {
-            echo "Pipeline failed."
+            echo "Terraform deployment failed!"
         }
     }
 }

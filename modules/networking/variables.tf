@@ -2,10 +2,6 @@ variable "region" {
   type = string
 }
 
-variable "environment" {
-  type        = string
-  description = "Deployment environment (dev, stag, prod)"
-}
 
 variable "vpc_cidr" {
   type = string

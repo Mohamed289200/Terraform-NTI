@@ -69,16 +69,15 @@ pipeline {
                 sh 'terraform output'
             }
         }
-
     }
 
     post {
         success {
-            echo "Terraform ${params.ENVIRONMENT} Deployment Completed Successfully"
+            echo "Deployment to ${params.ENVIRONMENT} completed successfully."
         }
 
         failure {
-            echo "Terraform Deployment Failed"
+            echo "Pipeline failed."
         }
     }
 }

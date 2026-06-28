@@ -1,36 +1,34 @@
 variable "region" {
-  type    = string
-  default = "us-east-2"
+  type = string
+}
+
+variable "environment" {
+  type        = string
+  description = "Deployment environment (dev, stag, prod)"
 }
 
 variable "vpc_cidr" {
-  type    = string
-  default = "10.0.0.0/16"
+  type = string
 }
 
 variable "public1_cidr" {
-  type    = string
-  default = "10.0.1.0/24"
+  type = string
 }
 
 variable "public2_cidr" {
-  type    = string
-  default = "10.0.2.0/24"
+  type = string
 }
 
 variable "private1_cidr" {
-  type    = string
-  default = "10.0.3.0/24"
+  type = string
 }
 
 variable "private2_cidr" {
-  type    = string
-  default = "10.0.4.0/24"
+  type = string
 }
 
 variable "instance_type" {
-  type    = string
-  default = "t3.micro"
+  type = string
 }
 
 variable "public_key" {
@@ -40,5 +38,5 @@ variable "public_key" {
 
 variable "private_key_path" {
   type        = string
-  description = "Path to the private key file for SSH"
+  description = "Path to the private key file"
 }

@@ -5,13 +5,7 @@ pipeline {
         choice(
             name: 'ENVIRONMENT',
             choices: ['dev', 'stag', 'prod'],
-            description: 'Select Terraform Environment'
-        )
-
-        choice(
-            name: 'ACTION',
-            choices: ['plan', 'apply', 'destroy'],
-            description: 'Terraform Action'
+            description: 'Choose Terraform Environment'
         )
     }
 
@@ -23,8 +17,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/Mohamed289200/Terraform-NTI.git'
+                checkout scm
             }
         }
 
@@ -47,32 +40,17 @@ pipeline {
         }
 
         stage('Terraform Plan') {
-
-            when {
-                anyOf {
-                    expression { params.ACTION == 'plan' }
-                    expression { params.ACTION == 'apply' }
-                }
-            }
-
             steps {
-
                 sh """
                 terraform plan \
-                -var-file=env/${params.ENVIRONMENT}.tfvars \
+                -var-file=${params.ENVIRONMENT}.tfvars \
                 -out=tfplan
                 """
             }
         }
 
-        stage('Approval Before Apply') {
-
-            when {
-                expression { params.ACTION == 'apply' }
-            }
-
+        stage('Approval') {
             steps {
-
                 input(
                     message: "Deploy to ${params.ENVIRONMENT} ?",
                     ok: "Deploy"
@@ -81,69 +59,26 @@ pipeline {
         }
 
         stage('Terraform Apply') {
-
-            when {
-                expression { params.ACTION == 'apply' }
-            }
-
             steps {
-
                 sh 'terraform apply -auto-approve tfplan'
             }
         }
 
-        stage('Approval Before Destroy') {
-
-            when {
-                expression { params.ACTION == 'destroy' }
-            }
-
-            steps {
-
-                input(
-                    message: "Destroy ${params.ENVIRONMENT} Infrastructure ?",
-                    ok: "Destroy"
-                )
-            }
-        }
-
-        stage('Terraform Destroy') {
-
-            when {
-                expression { params.ACTION == 'destroy' }
-            }
-
-            steps {
-
-                sh """
-                terraform destroy \
-                -auto-approve \
-                -var-file=env/${params.ENVIRONMENT}.tfvars
-                """
-            }
-        }
-
         stage('Terraform Output') {
-
-            when {
-                expression { params.ACTION == 'apply' }
-            }
-
             steps {
-
                 sh 'terraform output'
             }
         }
+
     }
 
     post {
-
         success {
-            echo 'Pipeline Finished Successfully.'
+            echo "Terraform ${params.ENVIRONMENT} Deployment Completed Successfully"
         }
 
         failure {
-            echo 'Pipeline Failed.'
+            echo "Terraform Deployment Failed"
         }
     }
 }
